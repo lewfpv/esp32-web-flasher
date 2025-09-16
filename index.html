@@ -6,35 +6,25 @@
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     select, button { margin: 0.5rem; padding: 0.5rem; font-size: 1rem; }
+    esp-web-install-button { margin-top: 1rem; display: block; }
   </style>
   <script type="module">
-    import { install } from "https://unpkg.com/esp-web-tools@9.3.0/dist/web/install-button.js";
-
     const repo = "lewfpv/esp32-web-flasher";
     const branch = "main";
     const basePath = "firmwares";
 
     async function fetchDirs(path) {
       const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-      console.log("Lekérdezem a mappát:", url);
       const res = await fetch(url);
-      if (!res.ok) {
-        console.error("Hiba a lekérdezésnél:", res.status, res.statusText);
-        return [];
-      }
+      if (!res.ok) return [];
       return await res.json();
     }
 
     async function loadProjects() {
-      console.log("🔄 Betöltöm a projekteket...");
       const projects = await fetchDirs(basePath);
-      console.log("📦 Projektek JSON:", projects);
-
       const projectSelect = document.getElementById("project");
       projectSelect.innerHTML = `<option value="">-- válassz projektet --</option>`;
-
       projects.forEach(p => {
-        console.log("📁 Talált mappa:", p.name, "típus:", p.type);
         if (p.type === "dir") {
           const opt = document.createElement("option");
           opt.value = p.name;
@@ -42,26 +32,17 @@
           projectSelect.appendChild(opt);
         }
       });
-
       projectSelect.onchange = loadVersions;
     }
 
     async function loadVersions() {
       const project = document.getElementById("project").value;
-      console.log("🔄 Betöltöm a verziókat a projekthez:", project);
-
       const versionSelect = document.getElementById("version");
       versionSelect.innerHTML = `<option value="">-- válassz verziót --</option>`;
-      if (!project) {
-        console.warn("⚠️ Nincs projekt kiválasztva!");
-        return;
-      }
+      if (!project) return;
 
       const versions = await fetchDirs(`${basePath}/${project}`);
-      console.log("📦 Verziók JSON:", versions);
-
       versions.forEach(v => {
-        console.log("📁 Talált verzió:", v.name, "típus:", v.type);
         if (v.type === "dir") {
           const opt = document.createElement("option");
           opt.value = v.name;
@@ -71,24 +52,18 @@
       });
     }
 
-    async function installSelected() {
+    function showInstaller() {
       const project = document.getElementById("project").value;
       const version = document.getElementById("version").value;
-      if (!project || !version) {
-        alert("⚠️ Válassz projektet és verziót!");
-        return;
-      }
+      const container = document.getElementById("installer");
+      container.innerHTML = "";
 
-      const manifestUrl =
-        `https://raw.githubusercontent.com/${repo}/${branch}/${basePath}/${project}/${version}/manifest.json`;
+      if (!project || !version) return;
 
-      console.log("🚀 Flash indítása a következő manifesttel:", manifestUrl);
-      try {
-        await install({ manifest: manifestUrl });
-      } catch (e) {
-        console.error("❌ Hiba a flash-elés közben:", e);
-        alert("Nem sikerült a flash-elés. Ellenőrizd a konzolt!");
-      }
+      const manifestUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${basePath}/${project}/${version}/manifest.json`;
+      const btn = document.createElement("esp-web-install-button");
+      btn.setAttribute("manifest", manifestUrl);
+      container.appendChild(btn);
     }
 
     window.addEventListener("DOMContentLoaded", loadProjects);
@@ -99,7 +74,12 @@
   <p>Válassz projektet és firmware verziót:</p>
   <select id="project"></select>
   <select id="version"></select>
-  <button onclick="installSelected()">Flash!</button>
-  <p><small>Nyisd meg a böngésző konzolt (F12), ha hibát keresel!</small></p>
+  <button onclick="showInstaller()">Flash!</button>
+
+  <!-- Ide kerül a telepítő gomb -->
+  <div id="installer"></div>
+
+  <!-- ESP Web Tools elem -->
+  <script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
 </body>
 </html>
