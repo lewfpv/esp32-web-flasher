@@ -1,6 +1,6 @@
 {
   "name": "Startpad-LED-system",
-  "version": "1.1",
+  "version": "1.2",
   "new_install_prompt_erase": false,
   "builds": [
     {
@@ -10,7 +10,7 @@
         { "path": "bootloader.bin", "offset": "0x0000" },
         { "path": "partitions.bin", "offset": "0x8000" },
         { "path": "boot_app0.bin", "offset": "0xe000" },
-        { "path": "firmware.bin", "offset": "0x10000" }
+        { "path": "firmware_1.2.bin", "offset": "0x10000" }
       ]
     }
   ]
