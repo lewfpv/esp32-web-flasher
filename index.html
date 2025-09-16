@@ -8,10 +8,10 @@
     select, button { margin: 0.5rem; padding: 0.5rem; font-size: 1rem; }
   </style>
   <script type="module">
-    import { flash } from "https://unpkg.com/esp-web-tools@9.3.0/dist/web/install-button.js";
+    import { install } from "https://unpkg.com/esp-web-tools@9.3.0/dist/web/install-button.js";
 
-    const repo = "lewfpv/esp32-web-flasher"; // saját repo
-    const branch = "main"; // ha mást használsz, írd át
+    const repo = "lewfpv/esp32-web-flasher";
+    const branch = "main";
     const basePath = "firmwares";
 
     async function fetchDirs(path) {
@@ -84,14 +84,13 @@
 
       console.log("🚀 Flash indítása a következő manifesttel:", manifestUrl);
       try {
-        await flash({ manifest: manifestUrl });
+        await install({ manifest: manifestUrl });
       } catch (e) {
         console.error("❌ Hiba a flash-elés közben:", e);
         alert("Nem sikerült a flash-elés. Ellenőrizd a konzolt!");
       }
     }
 
-    // Indításkor betölti a projekteket
     window.addEventListener("DOMContentLoaded", loadProjects);
   </script>
 </head>
@@ -101,6 +100,6 @@
   <select id="project"></select>
   <select id="version"></select>
   <button onclick="installSelected()">Flash!</button>
-  <p><small>Nyisd meg a böngésző konzolt (F12) ha hibát keresel!</small></p>
+  <p><small>Nyisd meg a böngésző konzolt (F12), ha hibát keresel!</small></p>
 </body>
 </html>
