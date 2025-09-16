@@ -62,7 +62,8 @@
 
       if (!project || !version) return;
 
-      const manifestUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${basePath}/${project}/${version}/manifest.json`;
+      const manifestUrl = `https://lewfpv.github.io/esp32-web-flasher/${basePath}/${project}/${version}/manifest.json`;
+
       const btn = document.createElement("esp-web-install-button");
       btn.setAttribute("manifest", manifestUrl);
       container.appendChild(btn);
