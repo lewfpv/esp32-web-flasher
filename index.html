@@ -2,87 +2,63 @@
 <html>
 <head>
   <meta charset="utf-8">
+  <meta content='width=device-width' name='viewport'>
   <title>ESP32 Web Flasher</title>
-  <style>
-    body { font-family: sans-serif; text-align: center; padding: 2rem; }
-    select, button { margin: 0.5rem; padding: 0.5rem; font-size: 1rem; }
-    esp-web-install-button { margin-top: 1rem; display: block; }
-  </style>
-  <script type="module">
-    import "https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module";
-
-    const repo = "lewfpv/esp32-web-flasher";
-    const branch = "main";
-    const basePath = "firmwares";
-
-    async function fetchDirs(path) {
-      const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-      const res = await fetch(url);
-      if (!res.ok) return [];
-      return await res.json();
-    }
-
-    async function loadProjects() {
-      const projects = await fetchDirs(basePath);
-      const projectSelect = document.getElementById("project");
-      projectSelect.innerHTML = `<option value="">-- válassz projektet --</option>`;
-      projects.forEach(p => {
-        if (p.type === "dir") {
-          const opt = document.createElement("option");
-          opt.value = p.name;
-          opt.textContent = p.name;
-          projectSelect.appendChild(opt);
-        }
-      });
-      projectSelect.addEventListener("change", loadVersions);
-    }
-
-    async function loadVersions() {
-      const project = document.getElementById("project").value;
-      const versionSelect = document.getElementById("version");
-      versionSelect.innerHTML = `<option value="">-- válassz verziót --</option>`;
-      if (!project) return;
-
-      const versions = await fetchDirs(`${basePath}/${project}`);
-      versions.forEach(v => {
-        if (v.type === "dir") {
-          const opt = document.createElement("option");
-          opt.value = v.name;
-          opt.textContent = v.name;
-          versionSelect.appendChild(opt);
-        }
-      });
-    }
-
-    function showInstaller() {
-      const project = document.getElementById("project").value;
-      const version = document.getElementById("version").value;
-      const container = document.getElementById("installer");
-      container.innerHTML = "";
-
-      if (!project || !version) return;
-
-      const manifestUrl = `https://lewfpv.github.io/esp32-web-flasher/${basePath}/${project}/${version}/manifest.json`;
-
-      const btn = document.createElement("esp-web-install-button");
-      btn.setAttribute("manifest", manifestUrl);
-      container.appendChild(btn);
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      loadProjects();
-      document.getElementById("flashBtn").addEventListener("click", showInstaller);
-    });
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <script type="module" src="https://unpkg.com/esp-web-tools@9.2.1/dist/web/install-button.js?module">
   </script>
 </head>
-<body>
-  <h1>ESP32 Web Flasher</h1>
-  <p>Válassz projektet és firmware verziót:</p>
-  <select id="project"></select>
-  <select id="version"></select>
-  <button id="flashBtn">Flash!</button>
 
-  <!-- Ide kerül a telepítő gomb -->
-  <div id="installer"></div>
+<body onload="checkSupported()">
+
+  <div class="main">
+    <h2>ESP32 Web Flasher</h2>
+    <div id="flasher">
+      <div class="container inst-button">
+        <!-- The selectable builds -->
+        <select id="ver" class="btn" onchange="setManifest()">
+          <optgroup label="Startpad-LED-system">
+            <option
+              data-manifest="firmwares/Startpad-LED-system/1.1/manifest.json">
+              TheDIYGuy999 Pingon 14C excavator, Flysky FS-i6S IBUS</option>
+          </optgroup>
+
+
+        </select><br>
+
+        <esp-web-install-button id="inst">
+          <button class="btn" slot="activate">Connect</button>
+        </esp-web-install-button><br>
+
+      </div>
+
+      <script>
+        function setManifest() {
+          var sel = document.getElementById('ver');
+          var opt = sel.options[sel.selectedIndex];
+          var m = opt.dataset.manifest;
+          var me = opt.dataset.ethernet;
+          document.getElementById('inst').setAttribute('manifest', m);
+        }
+
+        function checkSupported() {
+          if (document.getElementById('inst').hasAttribute('install-unsupported')) unsupported();
+          else setManifest();
+        }
+
+        function unsupported() {
+          document.getElementById('flasher').innerHTML = "Your Browser is not supported!<br>Please use Desktop Chrome or Edge.<br>"
+        }
+
+        function showSerialHelp() {
+          document.getElementById('coms').innerHTML = `To proceed, click "Connect" and then select the correct COM port.<br><br>
+    you may need drivers for your board.<br>
+    Here are links to USB to UART chips, which are often used on ESP32 boards:<br><br>
+    <a href="https://www.silabs.com/developers/usb-to-uart-bridge-vcp-drivers" target="_blank">CP2102</a><br>
+    <a href="https://github.com/nodemcu/nodemcu-devkit/tree/master/Drivers" target="_blank">CH34x</a><br><br>
+    Make sure, your USB cable is suitable for the selected transmission speed.<br><br>
+    `;
+        }
+      </script>
 </body>
 </html>
