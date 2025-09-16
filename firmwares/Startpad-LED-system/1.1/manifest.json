@@ -5,7 +5,6 @@
   "builds": [
     {
       "chipFamily": "ESP32-C3",
-      "improv": false,
       "parts": [
         { "path": "bootloader.bin", "offset": "0x0000" },
         { "path": "partitions.bin", "offset": "0x8000" },
