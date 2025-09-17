@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>ESP32 Web Flasher</title>
+  <link rel="stylesheet" href="style.css">
   <style>
     body { font-family: sans-serif; text-align: center; padding: 2rem; }
     select, button { margin: 0.5rem; padding: 0.5rem; font-size: 1rem; }
@@ -75,13 +76,23 @@
   </script>
 </head>
 <body>
-  <h1>ESP32 Web Flasher</h1>
-  <p>Choose project & firmware version:</p>
-  <select id="project"></select>
-  <select id="version"></select>
-  <button id="flashBtn">Go!</button>
+<div class="container">
+  <div>
+    <img src="images/esp32logo.png" alt="logo">
+    <h1>ESP32 Web Flasher</h1>
+    <p>Choose project & firmware version:</p>
+  </div>
 
-  <!-- button -->
-  <div id="installer"></div>
+  <div class="dropdown">
+    <select id="project"></select>
+    <select id="version"></select>
+    <button id="flashBtn">Go!</button>
+  </div>
+
+</div>
+
+<footer>
+    &copy; v1.0.20 - LEWFPV Powered by <a target="_blank" href="https://github.com/esphome/esp-web-tools">ESP Web Tools</a>        
+  </footer>
 </body>
 </html>
